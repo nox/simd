@@ -24,7 +24,7 @@ pub trait F32x4 {
     fn to_f64(self) -> f64x2;
 }
 impl F32x4 for f32x4 {
-    #[inline]
+    #[inline(always)]
     fn to_f64(self) -> f64x2 {
         unsafe {
             simd_cast(f32x2(self.0, self.1))
@@ -38,23 +38,23 @@ pub mod common {
     use super::*;
     use std::mem;
 
-    #[inline]
+    #[inline(always)]
     pub fn f32x4_sqrt(x: f32x4) -> f32x4 {
         unsafe {super::aarch64_vsqrtq_f32(x)}
     }
-    #[inline]
+    #[inline(always)]
     pub fn f32x4_approx_rsqrt(x: f32x4) -> f32x4 {
         unsafe {super::aarch64_vrsqrteq_f32(x)}
     }
-    #[inline]
+    #[inline(always)]
     pub fn f32x4_approx_reciprocal(x: f32x4) -> f32x4 {
         unsafe {super::aarch64_vrecpeq_f32(x)}
     }
-    #[inline]
+    #[inline(always)]
     pub fn f32x4_max(x: f32x4, y: f32x4) -> f32x4 {
         unsafe {super::aarch64_vmaxq_f32(x, y)}
     }
-    #[inline]
+    #[inline(always)]
     pub fn f32x4_min(x: f32x4, y: f32x4) -> f32x4 {
         unsafe {super::aarch64_vminq_f32(x, y)}
     }

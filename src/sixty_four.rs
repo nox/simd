@@ -60,19 +60,19 @@ basic_impls! {
 mod common {
     use super::*;
     // naive for now
-    #[inline]
+    #[inline(always)]
     pub fn bool64ix2_all(x: bool64ix2) -> bool {
         x.0 != 0 && x.1 != 0
     }
-    #[inline]
+    #[inline(always)]
     pub fn bool64ix2_any(x: bool64ix2) -> bool {
         x.0 != 0 || x.1 != 0
     }
-    #[inline]
+    #[inline(always)]
     pub fn bool64fx2_all(x: bool64fx2) -> bool {
         x.0 != 0 && x.1 != 0
     }
-    #[inline]
+    #[inline(always)]
     pub fn bool64fx2_any(x: bool64fx2) -> bool {
         x.0 != 0 || x.1 != 0
     }}
@@ -88,42 +88,42 @@ bool_impls! {
 
 impl u64x2 {
     /// Convert each lane to a signed integer.
-    #[inline]
+    #[inline(always)]
     pub fn to_i64(self) -> i64x2 {
         unsafe {simd_cast(self)}
     }
     /// Convert each lane to a 64-bit float.
-    #[inline]
+    #[inline(always)]
     pub fn to_f64(self) -> f64x2 {
         unsafe {simd_cast(self)}
     }
 }
 impl i64x2 {
     /// Convert each lane to an unsigned integer.
-    #[inline]
+    #[inline(always)]
     pub fn to_u64(self) -> u64x2 {
         unsafe {simd_cast(self)}
     }
     /// Convert each lane to a 64-bit float.
-    #[inline]
+    #[inline(always)]
     pub fn to_f64(self) -> f64x2 {
         unsafe {simd_cast(self)}
     }
 }
 impl f64x2 {
     /// Convert each lane to a signed integer.
-    #[inline]
+    #[inline(always)]
     pub fn to_i64(self) -> i64x2 {
         unsafe {simd_cast(self)}
     }
     /// Convert each lane to an unsigned integer.
-    #[inline]
+    #[inline(always)]
     pub fn to_u64(self) -> u64x2 {
         unsafe {simd_cast(self)}
     }
 
     /// Convert each lane to a 32-bit float.
-    #[inline]
+    #[inline(always)]
     pub fn to_f32(self) -> f32x4 {
         unsafe {
             let x: f32x2 = simd_cast(self);
@@ -160,7 +160,7 @@ macro_rules! operators {
         $(
             $(impl std::ops::$trayt for $ty {
                 type Output = Self;
-                #[inline]
+                #[inline(always)]
                 fn $method(self, x: Self) -> Self {
                     unsafe {$func(self, x)}
                 }
@@ -199,7 +199,7 @@ macro_rules! shift_one {
         $(
         impl std::ops::Shl<$by> for $ty {
             type Output = Self;
-            #[inline]
+            #[inline(always)]
             fn shl(self, other: $by) -> Self {
                 unsafe { simd_shl(self, $ty::splat(other as <$ty as Simd>::Elem)) }
             }

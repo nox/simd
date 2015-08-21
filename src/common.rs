@@ -26,46 +26,46 @@ macro_rules! basic_impls {
         )*) => {
         $(impl $name {
             /// Create a new instance.
-            #[inline]
+            #[inline(always)]
             pub fn new($($first: $elem),*, $($last: $elem),*) -> $name {
                 $name($($first),*, $($last),*)
             }
 
             /// Create a new instance where every lane has value `x`.
             #[allow(unused_variables)]
-            #[inline]
+            #[inline(always)]
             pub fn splat(x: $elem) -> $name {
                 $name($({ let $first = ();  x}),*,
                       $({ let $last = ();  x}),*)
             }
 
             /// Compare for equality.
-            #[inline]
+            #[inline(always)]
             pub fn eq(self, other: Self) -> $bool {
                 unsafe {simd_eq(self, other)}
             }
             /// Compare for equality.
-            #[inline]
+            #[inline(always)]
             pub fn ne(self, other: Self) -> $bool {
                 unsafe {simd_ne(self, other)}
             }
             /// Compare for equality.
-            #[inline]
+            #[inline(always)]
             pub fn lt(self, other: Self) -> $bool {
                 unsafe {simd_lt(self, other)}
             }
             /// Compare for equality.
-            #[inline]
+            #[inline(always)]
             pub fn le(self, other: Self) -> $bool {
                 unsafe {simd_le(self, other)}
             }
             /// Compare for equality.
-            #[inline]
+            #[inline(always)]
             pub fn gt(self, other: Self) -> $bool {
                 unsafe {simd_gt(self, other)}
             }
             /// Compare for equality.
-            #[inline]
+            #[inline(always)]
             pub fn ge(self, other: Self) -> $bool {
                 unsafe {simd_ge(self, other)}
             }
@@ -75,7 +75,7 @@ macro_rules! basic_impls {
             /// # Panics
             ///
             /// `extract` will panic if `idx` is out of bounds.
-            #[inline]
+            #[inline(always)]
             pub fn extract(self, idx: u32) -> $elem {
                 assert!(idx < $length);
                 unsafe {simd_extract(self, idx)}
@@ -86,7 +86,7 @@ macro_rules! basic_impls {
             /// # Panics
             ///
             /// `replace` will panic if `idx` is out of bounds.
-            #[inline]
+            #[inline(always)]
             pub fn replace(self, idx: u32, elem: $elem) -> Self {
                 assert!(idx < $length);
                 unsafe {simd_insert(self, idx, elem)}
@@ -105,7 +105,7 @@ macro_rules! basic_impls {
             ///
             /// `load` will panic if `idx` is out of bounds in
             /// `array`, or if `array[idx..]` is too short.
-            #[inline]
+            #[inline(always)]
             pub fn load(array: &[$elem], idx: usize) -> Self {
                 let data = &array[idx..idx + $length];
                 let loaded = unsafe {
@@ -130,7 +130,7 @@ macro_rules! basic_impls {
             ///
             /// `store` will panic if `idx` is out of bounds in
             /// `array`, or if `array[idx...]` is too short.
-            #[inline]
+            #[inline(always)]
             pub fn store(self, array: &mut [$elem], idx: usize) {
                 let place = &mut array[idx..idx + $length];
                 unsafe {
@@ -169,7 +169,7 @@ macro_rules! bool_impls {
             }
 
             /// Create a new instance.
-            #[inline]
+            #[inline(always)]
             pub fn new($($first: bool),*, $($last: bool),*) -> $name {
                 unsafe {
                     // negate everything together
@@ -181,7 +181,7 @@ macro_rules! bool_impls {
 
             /// Create a new instance where every lane has value `x`.
             #[allow(unused_variables)]
-            #[inline]
+            #[inline(always)]
             pub fn splat(x: bool) -> $name {
                 let x = if x {!(0 as $repr_elem)} else {0};
                 $name($({ let $first = (); x}),*,
@@ -193,7 +193,7 @@ macro_rules! bool_impls {
             /// # Panics
             ///
             /// `extract` will panic if `idx` is out of bounds.
-            #[inline]
+            #[inline(always)]
             pub fn extract(self, idx: u32) -> bool {
                 assert!(idx < $length);
                 unsafe {simd_extract(self.to_repr(), idx) != 0}
@@ -204,7 +204,7 @@ macro_rules! bool_impls {
             /// # Panics
             ///
             /// `replace` will panic if `idx` is out of bounds.
-            #[inline]
+            #[inline(always)]
             pub fn replace(self, idx: u32, elem: bool) -> Self {
                 assert!(idx < $length);
                 let x = if elem {!(0 as $repr_elem)} else {0};
@@ -221,7 +221,7 @@ macro_rules! bool_impls {
             ///        if self.extract(1) { then.extract(1) } else { else_.extract(1) },
             ///        ...)
             /// ```
-            #[inline]
+            #[inline(always)]
             pub fn select<T: Simd<Bool = $name>>(self, then: T, else_: T) -> T {
                 let then: $repr = bitcast(then);
                 let else_: $repr = bitcast(else_);
@@ -236,7 +236,7 @@ macro_rules! bool_impls {
             /// ```rust,ignore
             /// self.extract(0) && self.extract(1) && ...
             /// ```
-            #[inline]
+            #[inline(always)]
             pub fn all(self) -> bool {
                 common::$all(self)
             }
@@ -248,14 +248,14 @@ macro_rules! bool_impls {
             /// ```rust,ignore
             /// self.extract(0) || self.extract(1) || ...
             /// ```
-            #[inline]
+            #[inline(always)]
             pub fn any(self) -> bool {
                 common::$any(self)
             }
 
             $(
                 #[$cvt_meta]
-                #[inline]
+                #[inline(always)]
                 pub fn $cvt(self) -> $cvt_to {
                     bitcast(self)
                 }
@@ -264,7 +264,7 @@ macro_rules! bool_impls {
           impl std::ops::Not for $name {
               type Output = Self;
 
-              #[inline]
+              #[inline(always)]
               fn not(self) -> Self {
                   Self::from_repr($repr::splat(!(0 as $repr_elem)) ^ self.to_repr())
               }
@@ -288,31 +288,31 @@ bool_impls! {
 
 impl u32x4 {
     /// Convert each lane to a signed integer.
-    #[inline]
+    #[inline(always)]
     pub fn to_i32(self) -> i32x4 {
         unsafe {simd_cast(self)}
     }
     /// Convert each lane to a 32-bit float.
-    #[inline]
+    #[inline(always)]
     pub fn to_f32(self) -> f32x4 {
         unsafe {simd_cast(self)}
     }
 }
 impl i32x4 {
     /// Convert each lane to an unsigned integer.
-    #[inline]
+    #[inline(always)]
     pub fn to_u32(self) -> u32x4 {
         unsafe {simd_cast(self)}
     }
     /// Convert each lane to a 32-bit float.
-    #[inline]
+    #[inline(always)]
     pub fn to_f32(self) -> f32x4 {
         unsafe {simd_cast(self)}
     }
 }
 impl f32x4 {
     /// Compute the square root of each lane.
-    #[inline]
+    #[inline(always)]
     pub fn sqrt(self) -> Self {
         common::f32x4_sqrt(self)
     }
@@ -320,7 +320,7 @@ impl f32x4 {
     /// of `self`, that is, `f32::splat(1.0) / self.sqrt()`.
     ///
     /// The accuracy of this approximation is platform dependent.
-    #[inline]
+    #[inline(always)]
     pub fn approx_rsqrt(self) -> Self {
         common::f32x4_approx_rsqrt(self)
     }
@@ -328,7 +328,7 @@ impl f32x4 {
     /// `f32::splat(1.0) / self`.
     ///
     /// The accuracy of this approximation is platform dependent.
-    #[inline]
+    #[inline(always)]
     pub fn approx_reciprocal(self) -> Self {
         common::f32x4_approx_reciprocal(self)
     }
@@ -342,7 +342,7 @@ impl f32x4 {
     ///            self.extract(1).max(other.extract(1)),
     ///            ...)
     /// ```
-    #[inline]
+    #[inline(always)]
     pub fn max(self, other: Self) -> Self {
         common::f32x4_max(self, other)
     }
@@ -356,17 +356,17 @@ impl f32x4 {
     ///            self.extract(1).min(other.extract(1)),
     ///            ...)
     /// ```
-    #[inline]
+    #[inline(always)]
     pub fn min(self, other: Self) -> Self {
         common::f32x4_min(self, other)
     }
     /// Convert each lane to a signed integer.
-    #[inline]
+    #[inline(always)]
     pub fn to_i32(self) -> i32x4 {
         unsafe {simd_cast(self)}
     }
     /// Convert each lane to an unsigned integer.
-    #[inline]
+    #[inline(always)]
     pub fn to_u32(self) -> u32x4 {
         unsafe {simd_cast(self)}
     }
@@ -374,14 +374,14 @@ impl f32x4 {
 
 impl i16x8 {
     /// Convert each lane to an unsigned integer.
-    #[inline]
+    #[inline(always)]
     pub fn to_u16(self) -> u16x8 {
         unsafe {simd_cast(self)}
     }
 }
 impl u16x8 {
     /// Convert each lane to a signed integer.
-    #[inline]
+    #[inline(always)]
     pub fn to_i16(self) -> i16x8 {
         unsafe {simd_cast(self)}
     }
@@ -389,14 +389,14 @@ impl u16x8 {
 
 impl i8x16 {
     /// Convert each lane to an unsigned integer.
-    #[inline]
+    #[inline(always)]
     pub fn to_u8(self) -> u8x16 {
         unsafe {simd_cast(self)}
     }
 }
 impl u8x16 {
     /// Convert each lane to a signed integer.
-    #[inline]
+    #[inline(always)]
     pub fn to_i8(self) -> i8x16 {
         unsafe {simd_cast(self)}
     }
@@ -447,7 +447,7 @@ macro_rules! operators {
         $(
             $(impl std::ops::$trayt for $ty {
                 type Output = Self;
-                #[inline]
+                #[inline(always)]
                 fn $method(self, x: Self) -> Self {
                     unsafe {$func(self, x)}
                 }
@@ -486,7 +486,7 @@ macro_rules! shift_one {
         $(
         impl std::ops::Shl<$by> for $ty {
             type Output = Self;
-            #[inline]
+            #[inline(always)]
             fn shl(self, other: $by) -> Self {
                 unsafe { simd_shl(self, $ty::splat(other as <$ty as Simd>::Elem)) }
             }

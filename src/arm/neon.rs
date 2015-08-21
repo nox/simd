@@ -363,19 +363,19 @@ impl f32x4 {
 }
 
 impl u8x8 {
-    #[inline]
+    #[inline(always)]
     pub fn table_lookup_1(self, t0: u8x8) -> u8x8 {
         unsafe {arm_vtbl1_u8(t0, self)}
     }
-    #[inline]
+    #[inline(always)]
     pub fn table_lookup_2(self, t0: u8x8, t1: u8x8) -> u8x8 {
         unsafe {arm_vtbl2_u8(t0, t1, self)}
     }
-    #[inline]
+    #[inline(always)]
     pub fn table_lookup_3(self, t0: u8x8, t1: u8x8, t2: u8x8) -> u8x8 {
         unsafe {arm_vtbl3_u8(t0, t1, t2, self)}
     }
-    #[inline]
+    #[inline(always)]
     pub fn table_lookup_4(self, t0: u8x8, t1: u8x8, t2: u8x8, t3: u8x8) -> u8x8 {
         unsafe {arm_vtbl4_u8(t0, t1, t2, t3, self)}
     }
@@ -387,23 +387,23 @@ pub mod common {
     use super::*;
     use std::mem;
 
-    #[inline]
+    #[inline(always)]
     pub fn f32x4_sqrt(x: f32x4) -> f32x4 {
         unsafe {super::arm_vsqrtq_f32(x)}
     }
-    #[inline]
+    #[inline(always)]
     pub fn f32x4_approx_rsqrt(x: f32x4) -> f32x4 {
         unsafe {super::arm_vrsqrteq_f32(x)}
     }
-    #[inline]
+    #[inline(always)]
     pub fn f32x4_approx_reciprocal(x: f32x4) -> f32x4 {
         unsafe {super::arm_vrecpeq_f32(x)}
     }
-    #[inline]
+    #[inline(always)]
     pub fn f32x4_max(x: f32x4, y: f32x4) -> f32x4 {
         unsafe {super::arm_vmaxq_f32(x, y)}
     }
-    #[inline]
+    #[inline(always)]
     pub fn f32x4_min(x: f32x4, y: f32x4) -> f32x4 {
         unsafe {super::arm_vminq_f32(x, y)}
     }

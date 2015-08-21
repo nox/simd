@@ -48,23 +48,23 @@ pub mod common {
     use super::super::super::*;
     use std::mem;
 
-    #[inline]
+    #[inline(always)]
     pub fn f32x4_sqrt(x: f32x4) -> f32x4 {
         unsafe {super::x86_mm_sqrt_ps(x)}
     }
-    #[inline]
+    #[inline(always)]
     pub fn f32x4_approx_rsqrt(x: f32x4) -> f32x4 {
         unsafe {super::x86_mm_rsqrt_ps(x)}
     }
-    #[inline]
+    #[inline(always)]
     pub fn f32x4_approx_reciprocal(x: f32x4) -> f32x4 {
         unsafe {super::x86_mm_rcp_ps(x)}
     }
-    #[inline]
+    #[inline(always)]
     pub fn f32x4_max(x: f32x4, y: f32x4) -> f32x4 {
         unsafe {super::x86_mm_max_ps(x, y)}
     }
-    #[inline]
+    #[inline(always)]
     pub fn f32x4_min(x: f32x4, y: f32x4) -> f32x4 {
         unsafe {super::x86_mm_min_ps(x, y)}
     }
@@ -98,7 +98,7 @@ pub trait F32x4 {
     fn to_f64(self) -> f64x2;
 }
 impl F32x4 for f32x4 {
-    #[inline]
+    #[inline(always)]
     fn to_f64(self) -> f64x2 {
         unsafe {
             simd_cast(f32x2(self.0, self.1))
